@@ -1,0 +1,80 @@
+{% extends "layout.html" %}
+
+{% block title %} home {% endblock %}
+
+{% block main %}
+  <div >
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 bg-success" id="above" >
+          <h3 class="text-danger col-md-offset-1" id="tag">Why Sign Up With Us??? </h3>
+          <ul>
+            <li><p><font size="4">Just save travel plans in your account, And we will
+              keep you updated with all changing schedules related to your bookings.. </font></p></li>
+            <li><p><font size="4">In case the vehicle you are on is running late, and there is
+              any chances that you will miss your next booking, we will let you know about
+              all the alternatives Just in time..</font></p></li>
+            <li><p><font size="4">Discover to get anywhere using flights, buses, train or personal vehicle</font></p></li>
+            <li><p><font size="4">Use our android app and always be connected</font></p></li>
+          </ul>
+        </div>
+        <div class="col-md-6">
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="map">  </div>
+  <div id="text"></div>
+  <script type="text/javascript">
+    function initMap() {
+      var pos;
+      var temp;
+      /*if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          pos = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+        });
+      } else {*/
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function(){
+          if( this.readyState == 4 && this.status == 200 ){
+              temp =  this.responseText;
+              var re = /"lat":/;
+              var p = temp.search(re);
+              //var latitude = Number(temp.substr(p+6,9));
+              re = /"lng":/;
+              var q = temp.search(re);
+              //var longitude = Number(temp.substr(p+6,9));
+              pos = {
+                lat: Number(temp.substr(p+6,9)),
+                lng: Number(temp.substr(q+6,9))
+              }
+              //console.log(pos);
+              var map = new google.maps.Map(document.getElementById('map'),{
+                zoom: 10,
+                center: pos
+              });
+
+              var marker = new google.maps.Marker({
+                position: pos,
+                map: map
+              });
+          }
+        };
+        xhttp.open("POST","https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyBejLvBrhmtzS0h5r5ubkthUiX6Fsv1Xmg",true);
+        xhttp.send();
+        // Browser doesn't support Geolocation
+        //pos = {lat: 21.7467252, lng: 72.14729399999999 }
+        //document.getElementById("text").innerHTML = pos;
+
+
+    }
+  </script>
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2yidwufMsIbOFAh-mhiQX8-V1TR0V_F0&callback=initMap">
+  </script>
+
+{% endblock %}

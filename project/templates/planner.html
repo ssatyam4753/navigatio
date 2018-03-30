@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Planner
+{% endblock %}
+
+{% block main %}
+<div class="container">
+  <h2 class="text-center text-danger">YOU SEARCHED : {{origin}} TO {{destination}}</h2>
+<table class="table">
+
+  <tr>
+    <th>ORIGIN</th>
+    <th>TRAVELLING OPTIONS</th>
+    <th>DESTINATION</th>
+    <th>DISTANCE</th>
+    <th>TIME TAKEN</th>
+    <th>ESTIMATED COST</th>
+  </tr>
+  {% for route in plan.routes %}
+
+  <tr>
+    <td >{{plan.places[route.depPlace].shortName}}</td>
+    <td class=""><a href="#">{{route.name}}</a></td>
+    <td >{{plan.places[route.arrPlace].shortName}}</td>
+    <td>{{route.distance}} Kms</td>
+    <td><script>document.write(Math.floor({{route.totalDuration}}/60)+" Hrs "+{{route.totalDuration}}%60+" Mins")</script></td>
+    <td><script>document.write({{route.indicativePrices[0].priceLow}}*60 +" - "+{{route.indicativePrices[0].priceHigh}}*60 + " INR")</script></td>
+  </tr>
+  {% endfor %}
+</table>
+</div>
+{% endblock %}
+
+{% block navigate %}
+  <div>
+    <div class="row">
+      <div class="col-md-4 bg-success "id="plan">
+        <h1></h1>
+      </div>
+      <div class="col-md-8 container" id="plannerMap">
+
+      </div>
+    </div>
+  </div>
+<script type="text/javascript">
+function initMap() {
+  var pos;
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      pos = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
+    });
+  } else {
+    // Browser doesn't support Geolocation
+  pos = {lat: 21.7467252, lng: 72.14729399999999 }
+  }
+
+  var map = new google.maps.Map(document.getElementById('plannerMap'),{
+    zoom: 10,
+    center: {lat: 21.7467252, lng: 72.14729399999999 }
+  });
+
+  var marker = new google.maps.Marker({
+    position: {lat: 21.7467252, lng: 72.14729399999999 },
+    map: map
+  });
+}
+</script>
+<script async defer
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2yidwufMsIbOFAh-mhiQX8-V1TR0V_F0&callback=initMap">
+</script>
+
+{% endblock %}
