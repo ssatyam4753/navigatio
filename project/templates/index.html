@@ -6,6 +6,7 @@
   <div >
     <div class="container">
       <div class="row">
+        {% if loggedin != True %}
         <div class="col-md-6 bg-success" id="above" >
           <h3 class="text-danger col-md-offset-1" id="tag">Why Sign Up With Us??? </h3>
           <ul>
@@ -18,9 +19,17 @@
             <li><p><font size="4">Use our android app and always be connected</font></p></li>
           </ul>
         </div>
-        <div class="col-md-6">
+        {% endif %}
 
-        </div>
+          {% if loggedin == True %}
+
+            <div class="col-md-6 panel panel-default" id = "above">
+              <a href="#"><h1 class="panel-body text-success text-center">ADD a new PLAN</h1></a>
+            </div>
+            <div class="col-md-6 panel panel-default" id = "above">
+              <a href="#"><h1 class="panel-body text-success">UPCOMING PLANS</h1></a>
+            </div>
+          {% endif %}
       </div>
     </div>
   </div>

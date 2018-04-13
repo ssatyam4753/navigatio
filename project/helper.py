@@ -65,13 +65,34 @@ def listify(data):
 
     routes = list()
     for route in data["routes"]:
-        routes.append({'arrPlace':route.get('arrPlace',None),'depPlace':route.get('depPlace',None),'distance':route.get('distance',None),'name':route.get('name',None),'totalDuration':route.get('totalDuration',0),'price':route['indicativePrices'][0]['price'],'currency':route['indicativePrices'][0]['currency'],'segments':route.get('segments',None)})
+        routes.append({'arrPlace':route.get('arrPlace',None),'depPlace':route.get('depPlace',None),'distance':route.get('distance',None),'name':route.get('name',None),
+        'totalDuration':route.get('totalDuration',0),'price':route['indicativePrices'][0]['price'],'currency':route['indicativePrices'][0]['currency'],'segments':route.get('segments',None)})
 
     dct = {'places':places,'vehicles':vehicles,'aircrafts':aircrafts,'airlines':airlines,'agencies':agencies,'routes':routes}
     return dct
 
+def to_paths(data):
+    path = list()
+    temp = list()
+    for route in data["routes"]:
+        for segment in route["segments"] :
+            temp.append(str(segment.get('path','')))
+        #print(temp)
+        path.append(temp[:])
+        temp[:] = []
+    for p in path:
+        if '' in p:
+            p.remove('')
+        #for j in p:
+        #    for i in j:
+        #        i.replace('\\','\\\\')
+        #print(p)
+        #print("\n\n")
+    return path
+
 def main():
-    data = grab("bhavnagar","london")
+    data = grab("bhavnagar","pune")
+    to_paths(data)
 
 
 

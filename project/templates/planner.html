@@ -4,73 +4,153 @@
 Planner
 {% endblock %}
 
-{% block main %}
-<div class="container">
-  <h2 class="text-center text-danger">YOU SEARCHED : {{origin}} TO {{destination}}</h2>
-<table class="table">
+  {% block main %}
+  <script type="text/javascript">
+    var decodedPath = []
+    function initMap() {
+      var pos;
+      var temp;
+      /*if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          pos = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+        });
+      } else {*/
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function(){
+          if( this.readyState == 4 && this.status == 200 ){
+              temp =  this.responseText;
+              var re = /"lat":/;
+              var p = temp.search(re);
+              //var latitude = Number(temp.substr(p+6,9));
+              re = /"lng":/;
+              var q = temp.search(re);
+              //var longitude = Number(temp.substr(p+6,9));
+              pos = {
+                lat: Number(temp.substr(p+6,9)),
+                lng: Number(temp.substr(q+6,9))
+              }
+              //console.log(pos);
+              var map = new google.maps.Map(document.getElementById('plannerMap'),{
+                zoom: 10,
+                center: pos
+              });
 
-  <tr>
-    <th>ORIGIN</th>
-    <th>TRAVELLING OPTIONS</th>
-    <th>DESTINATION</th>
-    <th>DISTANCE</th>
-    <th>TIME TAKEN</th>
-    <th>ESTIMATED COST</th>
-  </tr>
-  {% for route in plan.routes %}
+              var marker = new google.maps.Marker({
+                position: pos,
+                map: map
+              });
+          }
+        };
+        xhttp.open("POST","https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyBejLvBrhmtzS0h5r5ubkthUiX6Fsv1Xmg",true);
+        xhttp.send();
+        // Browser doesn't support Geolocation
+        //pos = {lat: 21.7467252, lng: 72.14729399999999 }
+        //document.getElementById("text").innerHTML = pos;
 
-  <tr>
-    <td >{{plan.places[route.depPlace].shortName}}</td>
-    <td class=""><a href="#">{{route.name}}</a></td>
-    <td >{{plan.places[route.arrPlace].shortName}}</td>
-    <td>{{route.distance}} Kms</td>
-    <td><script>document.write(Math.floor({{route.totalDuration}}/60)+" Hrs "+{{route.totalDuration}}%60+" Mins")</script></td>
-    <td><script>document.write({{route.indicativePrices[0].priceLow}}*60 +" - "+{{route.indicativePrices[0].priceHigh}}*60 + " INR")</script></td>
-  </tr>
-  {% endfor %}
-</table>
-</div>
-{% endblock %}
+    }
+  </script>
+  <div class="row">
+    <h2 class="text-center text-danger">YOU SEARCHED : {{origin}} TO {{destination}}</h2>
+    <div>
 
-{% block navigate %}
-  <div>
-    <div class="row">
-      <div class="col-md-4 bg-success "id="plan">
-        <h1></h1>
-      </div>
-      <div class="col-md-8 container" id="plannerMap">
+      <div class="col-md-6">
+        <div class="panel-group">
+          <div class="panel panel-danger">
+            <div class="panel-body panel-heading">
+              <!--<span class="col-md-1">ORIGIN</span>-->
+              <span class="col-md-4">TRAVELLING OPTIONS</span>
+              <!--<span>DESTINATION</span>-->
+              <span class="col-md-2">DISTANCE</span>
+              <span class="col-md-2">TIME TAKEN</span>
+              <span class="col-md-2">ESTIMATED COST</span>
+            </div>
+          </div>
+          {% for route in plan.routes %}
+          <div class="panel panel-default">
+            <div class="panel-body panel-heading">
+              <a data-toggle="collapse" href="#collapse{{plan.routes.index(route)}}">
+                <!--<span>{{plan.places[route.depPlace].shortName}}</span>-->
+                <span class="col-md-4 text-center">{{route.name}}</span>
+                <!--<span >{{plan.places[route.arrPlace].shortName}}</span>-->
+                <span class="col-md-2">{{route.distance}} Kms</span>
+                <span class="col-md-2"><script>document.write(Math.floor({{route.totalDuration}}/60)+" Hrs "+{{route.totalDuration}}%60+" Mins")</script></span>
+                <span class="col-md-2"><script>document.write({{route.indicativePrices[0].priceLow}}*60 +" - "+{{route.indicativePrices[0].priceHigh}}*60 + " INR")</script></span>
+              </a>
+            </div>
+            <div class="panel-collapse collapse" id="collapse{{plan.routes.index(route)}}">
+                <p>{% for path in paths[plan.routes.index(route)] %}
+                  {{path}}<br><br><br>
+                  <script type="text/javascript">
+                  decodedPath.push(google.maps.geometry.encoding.decodePath('{{path}}'));
 
+                  </script>
+                  {% endfor %}
+                </p>
+            </div>
+          </div>
+        {% endfor %}
+        </div>
       </div>
     </div>
+
+    {% endblock %}
+
+    {% block navigate %}
+  <div>
+      <div class="col-md-6 container" id="plannerMap">   </div>
   </div>
-<script type="text/javascript">
-function initMap() {
-  var pos;
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(function(position) {
-      pos = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-      };
-    });
-  } else {
-    // Browser doesn't support Geolocation
-  pos = {lat: 21.7467252, lng: 72.14729399999999 }
-  }
+</div>
 
-  var map = new google.maps.Map(document.getElementById('plannerMap'),{
-    zoom: 10,
-    center: {lat: 21.7467252, lng: 72.14729399999999 }
-  });
-
-  var marker = new google.maps.Marker({
-    position: {lat: 21.7467252, lng: 72.14729399999999 },
-    map: map
-  });
-}
-</script>
 <script async defer
   src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2yidwufMsIbOFAh-mhiQX8-V1TR0V_F0&callback=initMap">
 </script>
+  {% endblock %}
 
-{% endblock %}
+  <!--<html>
+  <head>
+  <title>Test</title>
+  <script type="text/javascript" src="http://maps.google.com/maps/api/js?libraries=geometry&amp;sensor=false"></script>
+  <style type="text/css">
+  #map {width:670px;height:600px;}
+  </style>
+  <script type='text/javascript'>
+  function initialize() {
+      var myLatlng = new google.maps.LatLng(51.65905179951626, 7.3835928124999555);
+      var myOptions = {
+          zoom: 8,
+          center: myLatlng,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+      }
+      var map = new google.maps.Map(document.getElementById("map"), myOptions);
+
+      var decodedPath = google.maps.geometry.encoding.decodePath('csg{CcfsfOjECle@ntBjk@f~B~O~~BzRr}Ct`AbrOpVfcEfp@nhKdYzqEGzpCilAnhCeI~jCnmAzaKf`ArcI_CnoGwFfrJeC~lD{V~`Ew[j_HoOvgJqMzaIqFjkDiWjxOqO~pK~IniMtVrxQzy@fiB`cCfqDzo@naAtlB~sCflBt|DpMbfLzp@~_D|nB~nDt`AdfBz`BtiDrwB`sHjbChqIzcCj{I|qAhlNvm@vvGttAd`Ot~@~{JvtAh_Ofb@h|BbhEztKxIhO~k@hxAbgLhuMb}ExrKrwAz}BljGlgHln@j|Dz]haN_~BpcKw[rfLqSdzHyUtbEcpD`eMgn@tkCyz@xtG`tAbwDjJjjCvQzuLpGflEcLdxEgt@|eCsiJ`z[`xDbsIaxDcsIezA~yFab@tuBkqJntQyvAhvAgrIffGtr@rvC~wIjeEh~AnyBbgGphKt|BluGrrCbiAjvBnOzn@nzI`PvrC{QncDdCziCdXjzEjQxdCxy@jjFfd@vjCpm@dbC~Ilx@|m@|~F~uBnjGdp@bzCjhAjoCr]rjChvAjoDlUpiG`qA~_F~\\t|Hp^`bCjNfgBlk@lgAz~@voErJntBxf@tuB`eAroBve@dzCwE|cDl{B|xEhhDzs@ldE~aBll@fxClqCyLx}CcvBziDgsAb|AomA|pRyRjaD`w@dtFdfCz`AzTxxPvE~qEz@bz@sDf`HrbArbQxgCp_Cdk@r}HlnBp_ExCn_G~|@t\\|MxwAniA`mDfsCbo_@|eo@|bFttFfp@~XtyH`qAboJd~AbmCbBta@fKtrB`Cl_BdBvhArNtxFbv@tjGdxBboDptApkD|eCbXzWzmIziItbEnaElwBnbFhbCtpDxhKr}Kf|A|`B~eDtu@l{D~jC~pBfy@zsFd}BteNv_I|cD`vAv|IvHxy@n^|o@|}AhD`Jrk@tgB}PhnAwp@zfB}y@|yBtVtxJrVjbDnn@tcIdiBfdK`iBhqIp_H`mG|aBp~BvfEzxNzaDnrLrgBzrMh}@fqGjy@hdC~mDvoBfEl`FnR|wCek@hpFoGblC~WhqCflA~tGpgB`hKpM`kPnMxbP~f@x~C~y@~wBf`CpoG~uM|yUfpAp|Ank@baDjWfjHra@lkL}ObnJhmBjwHxpHh{UtfAzsGlb@dqCrf@~gA~@x^s@hiPhHr^dxC~|HvZxWn~DvlBpu@oHtf@by@jCfg@soDl_OmDbk@dHvhAtYtkE~Hrj@~jBz}J|lExoUbr@psB|hJfoPtgA`zClsDjmGhbCpoExg@zhCxxDtnRvw@fhBtxBryHrw@`kEzv@xyKh@rHhnCv}Hj[je@zJzNzt@bi@p]|zA|eRznZlVfsAteHtuIviDxkEft@|I`{A{RvmAl`@t|BsHf_Cf`Bt}Bh\\zW~ZnlDdnMlqAd_A`bBMf|BnaA|kA~cBj[dpB~gAprDnXhaCiN`n@{q@jaB`V`pCe^liIm^dkAeBrpGdqAtuC|V`Q`nC|q@f\\rdAjhBh`B|y@hzB`tBrtA~tDlxCpz@zGb_D{TpbG`IhjDwp@jwFuPlcCfMxvA}c@`cCvb@~wFa}BpcAaIfoA_s@p`BrOr^fo@lkAho@jaAuU|wAyqAtwAaSrlAzFbn@sAzaAaR`yAfUb[f\\jfBd|ExlBjvBf]r{@`cAl|E`xBd{B|z@n|@~LlUzo@hnC~Qr{AzlBjnA|]pg@r~GnxJl|@dvBvvH|cLvmCr_DpqAhw@vyDjtF|Xda@ftF~aIzzBxfC`kAtyBvp@|kCxx@deCpdClvAzEpV|Bx{DhJzx@v~@fwAbw@|uDxDf`Ar]lhBoLzhF{RnmIvq@`uIp|@|eCrcA`m@`kEvv@dlApeAliIz|Ap]`Z|dBr_Ev\\dVjsUpsFhSnKjzBjdCtHztBdqBd`@b}GzsCvlFpkCb|Ap{Djy@zjDzGfmDGv{D`dBzvFz|A~tDdrAhuBnhQplV~PrUlDzEfzHfjNjgC`oBfh@jyAndA`y@rrChxFh`ExzFtb@tuBlD`x@jT`cAtb@htAmCbqAk[|qAlKdjBcr@jdC`@dxA`Wh]zLhKdr@tzAdb@zxArfAbr@hq@btAwp@zzE~n@zkI`iAp}DbWr_Dv`BtaG~f@`iAfBjs@ff@ziCdjH|wP`Nlu@noEvzLxLn_D~zB`sFxMve@tcBt`E|Ev\\xa@t{BfqApcApHxhBdqN~l_@dlAjjAvqAr_@dz@|eC~`@|V`iBjVh@x@xkCl^|fDlA|hBlFt_@jc@t{@jlC`nAfS|tA`sArlAqApTz[`tAviAcJphAa^~_AtWbfBwGri@aw@dbCdnBhnBeBrtAjeCrk@vSrg@pvAzs@f`@|HzgBhqAb}AgCruBf`Atf@pgA|UlQtl@pwAdSbuAkUxmDmQtv@wUzsDhMl^qK~d@|_@drArpAxKt}AnzAzaEjnAdi@vwCiXzo@dPp~@xkA`i@~oAjhBpa@~K|sAfDfo@pp@pXz_Bbj@deB~{Cn`AlmBrhAj~Bdw@rnAeb@na@bl@jZdgAxfAtqAhn@zA|gBiv@pfBpi@jsAd~@|c@nvAdN`{@tbAnlAxj@tOfuAnjA|xAhzAf|@rxApQdBbzEgW~`Alc@`e@jk@zfAnb@rKlWbdAlhAj_@d`ApgD|kBdIlpA`e@dlBtEfq@vj@h{B|{Dx{Fh_Av`Dsk@pqDtFj|@bg@xeCzfBjhBvoAzd@t|CtpB`uB~@hw@rU|zAv|Ax~Ch~Ehv@x\\h|@jFx^hZ`k@jRhlA|@zIjGpr@dU`z@~Cja@`Szb@vl@~~@yBfaAl@t_@h]|q@`G`_AzMTu@');
+      var decodedLevels = decodeLevels("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
+
+      var setRegion = new google.maps.Polyline({
+          path: decodedPath,
+          levels: decodedLevels,
+          strokeColor: "#FF0000",
+          strokeOpacity: 1.0,
+          strokeWeight: 2,
+          map: map
+      });
+  }
+
+  function decodeLevels(encodedLevelsString) {
+      var decodedLevels = [];
+
+      for (var i = 0; i < encodedLevelsString.length; ++i) {
+          var level = encodedLevelsString.charCodeAt(i) - 63;
+          decodedLevels.push(level);
+      }
+      return decodedLevels;
+  }
+  </script>
+  </head>
+  <body onload="initialize()">
+  <div id="map"></div>
+  </body>
+  </html>-->

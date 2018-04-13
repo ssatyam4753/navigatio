@@ -8,7 +8,8 @@
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css?family=Rock+Salt" rel="stylesheet">
     <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet" />
-    <script src="{{ url_for('static', filename='scripts.js' )}}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='scripts.js') }}"></script>
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?libraries=geometry&amp;sensor=false"></script>
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
@@ -23,19 +24,31 @@
           </div>
           <ul class="nav navbar-nav">
             <li class="navbar-btn btn-default"> <a href="#"><span class="glyphicon glyphicon-sunglasses"></span> POPULAR DESTINATIONS</a> </li>
+            {% if loggedin == True %}
             <li class="dropdown navbar-btn btn-default"> <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-list-alt"></span>&nbsp;HISTORY&nbsp;<span class="caret"></span></a>
               <ul class="dropdown-menu">
                 <li><a href="#">Search History</a></li>
                 <li><a href="#">Schedule History</a></li>
               </ul>
             </li>
+
             <li class="navbar-btn btn-default"><a href="#"><span class="glyphicon glyphicon-list-alt"></span>&nbspUPCOMING SCHEDULES</a></li>
+            {% endif %}
             <li class="navbar-btn btn-default"> <a href="#"><span class="glyphicon glyphicon-king"></span> ABOUT US</a> </ul>
           </ul>
+          {% if loggedin != True %}
           <ul class="nav navbar-nav navbar-right">
-            <li class="navbar-btn btn-default"><a href="#"><span class="glyphicon glyphicon-user"></span>  Sign Up</a></li>
-            <li class="navbar-btn btn-default"><a href="#"><span class="glyphicon glyphicon-log-in"></span> Log In</a></li>
+            <li class="navbar-btn btn-default"><a href="{{ url_for("signup") }}"><span class="glyphicon glyphicon-user"></span>  Sign Up</a></li>
+            <li class="navbar-btn btn-default"><a href="{{ url_for("login") }}"><span class="glyphicon glyphicon-log-in"></span> Log In &nbsp&nbsp</a></li>
           </ul>
+          {% endif %}
+          {% if loggedin == true %}
+          <ul class="nav navbar-nav navbar-right">
+            <li class="navbar-btn btn-default"><a href="{{ url_for("logout") }}"><span class="glyphicon glyphicon-log-out"></span>  Log out</a></li>
+            <li class="navbar-btn btn-default"><a href="#"><span class="glyphicon glyphicon-user"></span> hello {{ user }} &nbsp&nbsp</a></li>
+          </ul>
+          {% endif %}
+
       </nav>
     </div>
 

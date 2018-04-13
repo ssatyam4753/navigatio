@@ -7,11 +7,11 @@
 
 }
 #plannerMap{
-  height: 500px;
+  height: 600px;
 }
 
 #plan{
-  height: 500px;
+  height: 400px;
 }
 #tag{
     font-family: 'Rock Salt', cursive;
@@ -19,7 +19,7 @@
 
 #above{
   z-index: 1;
-  opacity: .90;
+  opacity: .80;
 }
 
 ul#routeList li{
