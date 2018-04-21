@@ -22,7 +22,7 @@ conn = sqlite3.connect('navigation.sqlite',check_same_thread=False)
 cur = conn.cursor()
 
 cur.execute("CREATE TABLE IF NOT EXISTS users(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,name TEXT, username TEXT UNIQUE, hash TEXT, history_id INTEGER)")
-#cur.execute("CREATE TABLE IF NOT EXISTS history(id INTEGER NOT NULL,detail TEXT NOT NULL)")
+cur.execute("CREATE TABLE IF NOT EXISTS plans(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,detail TEXT NOT NULL,jdate TEXT)")
 
 app.config["SESSION_FILE_DIR"] = mkdtemp()
 app.config["SESSION_PERMANENT"] = False
@@ -77,6 +77,19 @@ def routes():
     else:
         return render_template("index.html")
 
+@app.route("/add_plan",methods = ['GET','POST'])
+def add_plan():
+    if request.method == 'GET':
+        return render_template("add_plan.html")
+    elif request.method == 'POST':
+        plan = request.form.get('from1')+request.form.get('to1')+request.form.get('ticketNumber1')
+        d1 = request.form.get('date1')
+        result = cur.execute("INSERT INTO plans(user_id, detail, jdate) VALUES(?,?,?)",(session["user_id"],plan,d1))
+        if not result :
+            return apology(message = "Unable to submit right now.. Try Again")
+        else :
+            return apology(message = "PLAN successfully added")
+
 
 @app.route("/login",methods = ['GET','POST'])
 def login():
@@ -84,9 +97,9 @@ def login():
     session.clear()
     if request.method == 'POST':
         if not request.form.get("username"):
-            return apology("username not provided")
+            return apology(message = "username not provided")
         elif not request.form.get("password"):
-            return apology("password not provided")
+            return apology(message = "password not provided")
 
         # search for username in database
         rows = cur.execute("SELECT * FROM users WHERE username = ?", (request.form.get("username"),))

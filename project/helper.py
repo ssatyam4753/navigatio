@@ -90,6 +90,8 @@ def to_paths(data):
         #print("\n\n")
     return path
 
+
+
 def main():
     data = grab("bhavnagar","pune")
     to_paths(data)

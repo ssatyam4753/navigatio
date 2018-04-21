@@ -24,7 +24,7 @@
           {% if loggedin == True %}
 
             <div class="col-md-6 panel panel-default" id = "above">
-              <a href="#"><h1 class="panel-body text-success text-center">ADD a new PLAN</h1></a>
+              <a href="{{ url_for("add_plan") }}"><h1 class="panel-body text-success text-center">ADD a new PLAN</h1></a>
             </div>
             <div class="col-md-6 panel panel-default" id = "above">
               <a href="#"><h1 class="panel-body text-success">UPCOMING PLANS</h1></a>

@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% block title %} add plan {% endblock %}
+
+{% block main %}
+
+  <div class="container">
+    <div class="container-fluid col-md-offset-2">
+    <form class="form-inline" method="post">
+      <div class="form-group">
+        <input class="form-control" type="text" name="from1" placeholder="From" required>
+        <input class="form-control" type="text" name="to1" placeholder="To" required>
+        <input class="form-control" type="text" name="ticketNumber1" placeholder="Ticket Number/ PNR Number" required>
+        <input class="form-control" type="date" name="date1" placeholder=""><br>
+        <input class="form-control" type="text" name="from2" placeholder="From">
+        <input class="form-control" type="text" name="to2" placeholder="To">
+        <input class="form-control" type="text" name="ticketNumber2" placeholder="Ticket Number/ PNR Number">
+        <input class="form-control" type="date" name="date2" placeholder=""><br>
+        <input class="form-control" type="text" name="from3" placeholder="From">
+        <input class="form-control" type="text" name="to3" placeholder="To">
+        <input class="form-control" type="text" name="ticketNumber3" placeholder="Ticket Number/ PNR Number">
+        <input class="form-control" type="date" name="date3" placeholder=""><br>
+        <button type="submit" class="btn btn-info btn-lg">add for monitoring</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
